@@ -1,0 +1,6 @@
+# Core dependencies
+httpx>=0.25.0
+
+# Agno framework
+agno>=0.1.0
+openai>=1.0.0
