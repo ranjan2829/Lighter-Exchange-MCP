@@ -1,5 +1,7 @@
 from typing import Optional
 
+from lighter_agno.toolkit import LighterExchangeTools
+
 try:
     from agno.agent import Agent
     AGNO_AVAILABLE = True
@@ -7,69 +9,61 @@ except ImportError:
     AGNO_AVAILABLE = False
     Agent = None
 
-from lighter_agno.toolkit import (
-    LighterExchangeTools,
-    get_all_tools,
-    get_market_tools,
-    get_account_tools,
-)
 
+TRADING_AGENT_INSTRUCTIONS = """You are an elite trading assistant for Lighter Exchange - \
+a high-performance zkSync DEX.
 
-TRADING_AGENT_INSTRUCTIONS = """You are a professional trading assistant for Lighter Exchange,
-a high-performance perpetual and spot trading platform on zkSync.
+🛠️ YOUR ARSENAL (40+ TOOLS):
+• Markets: get_ticker, get_orderbook, get_markets, get_asset_details
+• Trading: get_trades, get_candlesticks, get_funding_rates
+• Account: get_account, get_positions, get_pnl, get_liquidations
+• Orders: get_orders, get_account_active_orders, export_orders
+• Bridge: get_deposits, get_withdrawals, get_bridge_info
+• API: create_api_key, manage keys
+• Transactions: send_transaction (when enabled)
 
-Your capabilities include:
-- Checking market prices, orderbooks, and trading volumes
-- Viewing account balances, positions, and PnL
-- Analyzing trade history and funding rates
-- Providing market insights based on candlestick data
+⚡ EXECUTION PROTOCOL:
+1. Check market conditions FIRST (get_ticker/orderbook)
+2. Verify account state before advice (positions, PnL, limits)
+3. Warn about leverage risks explicitly
+4. Confirm transaction details before execution
+5. Use tables for data visualization
 
-When users ask about trading:
-1. Always check current market conditions first using get_ticker or get_orderbook
-2. For account queries, use the appropriate account tools
-3. Provide clear, actionable information
-4. Warn users about risks when discussing leveraged positions
+Master these tools. Trade smart. Stay profitable."""
 
-For placing orders (if transaction tools are enabled):
-1. Always confirm order details before submission
-2. Explain the implications of different order types
-3. Check account balance and positions before recommending trades
+MARKET_ANALYSIS_INSTRUCTIONS = """You are a market intelligence specialist for Lighter Exchange.
 
-Be concise but thorough. Use tables for displaying market data when appropriate."""
+🎯 FOCUS: Pure data-driven analysis using:
+• Real-time: get_ticker, get_orderbook, get_markets
+• Historical: get_candlesticks, get_trades, get_funding_rates
+• Deep-dive: get_orderbook_details, get_asset_details
 
-MARKET_ANALYSIS_INSTRUCTIONS = """You are a market analysis assistant for Lighter Exchange.
+📊 DELIVER: Sharp insights, pattern recognition, comparative analysis.
+🚫 AVOID: Price predictions, financial advice.
+✅ ALWAYS: Cite specific data sources."""
 
-Your role is to:
-- Provide real-time market data and analysis
-- Explain market trends using candlestick patterns
-- Compare different trading pairs
-- Monitor funding rates for perpetual markets
+ACCOUNT_MONITOR_INSTRUCTIONS = """You are an account guardian for Lighter Exchange.
 
-Focus on delivering accurate, data-driven insights without making price predictions.
-Always cite the specific data you're referencing."""
+🔍 MONITOR USING:
+• Portfolio: get_account, get_positions, get_pnl
+• Risk: get_liquidations, get_account_limits
+• Activity: get_orders, get_deposits, get_withdrawals
+• Funding: get_position_funding
 
-ACCOUNT_MONITOR_INSTRUCTIONS = """You are an account monitoring assistant for Lighter Exchange.
-
-Your role is to:
-- Track account balances and positions
-- Monitor PnL and performance metrics
-- Alert about liquidation risks
-- Track deposit and withdrawal history
-
-Provide clear summaries of account status and highlight any concerns."""
+⚠️ ALERT ON: Liquidation risks, unusual PnL movements, limit breaches.
+📋 REPORT: Clear status summaries with actionable insights."""
 
 
 def create_trading_agent(
-    model: str = "gpt-5",
+    model: str = "gpt-4o",
     include_transactions: bool = False,
     **kwargs
 ) -> Optional["Agent"]:
+    """Create full-featured trading agent with all tools."""
     if not AGNO_AVAILABLE:
-        print("Error: 'agno' package is not installed. Install with: pip install agno")
-        return None
+        raise ImportError("Install agno: pip install agno")
 
     tools = LighterExchangeTools(include_transactions=include_transactions)
-
     return Agent(
         model=model,
         instructions=TRADING_AGENT_INSTRUCTIONS,
@@ -79,10 +73,10 @@ def create_trading_agent(
     )
 
 
-def create_market_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
+def create_market_agent(model: str = "gpt-4o", **kwargs) -> Optional["Agent"]:
+    """Create market analysis agent (read-only)."""
     if not AGNO_AVAILABLE:
-        print("Error: 'agno' package is not installed. Install with: pip install agno")
-        return None
+        raise ImportError("Install agno: pip install agno")
 
     tools = LighterExchangeTools(
         include_account=False,
@@ -91,7 +85,6 @@ def create_market_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
         include_apikeys=False,
         include_bridge=False,
     )
-
     return Agent(
         model=model,
         instructions=MARKET_ANALYSIS_INSTRUCTIONS,
@@ -101,10 +94,10 @@ def create_market_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
     )
 
 
-def create_account_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
+def create_account_agent(model: str = "gpt-4o", **kwargs) -> Optional["Agent"]:
+    """Create account monitoring agent."""
     if not AGNO_AVAILABLE:
-        print("Error: 'agno' package is not installed. Install with: pip install agno")
-        return None
+        raise ImportError("Install agno: pip install agno")
 
     tools = LighterExchangeTools(
         include_markets=False,
@@ -113,7 +106,6 @@ def create_account_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
         include_apikeys=False,
         include_info=True,
     )
-
     return Agent(
         model=model,
         instructions=ACCOUNT_MONITOR_INSTRUCTIONS,
@@ -124,31 +116,9 @@ def create_account_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
 
 
 if __name__ == "__main__":
-    if not AGNO_AVAILABLE:
-        print("To use this module, install agno: pip install agno")
-        print("\nExample code:")
-        print("""
-from agno.agent import Agent
-from lighter_agno import LighterExchangeTools
-
-# Create agent with all tools
-agent = Agent(
-    tools=[LighterExchangeTools()],
-    markdown=True
-)
-
-# Or use the helper functions
-from lighter_agno.agent import create_trading_agent
-agent = create_trading_agent()
-
-# Chat with the agent
-agent.print_response("What's the current BTC price on Lighter?", stream=True)
-""")
-    else:
-        print("Creating example trading agent...")
+    try:
         agent = create_trading_agent()
-        if agent:
-            print("Agent created successfully!")
-            print(f"Tools available: {len(LighterExchangeTools())}")
-            print("\nExample usage:")
-            print('agent.print_response("What markets are available?", stream=True)')
+        print(f"✅ Trading agent created with {len(LighterExchangeTools())} tools")
+        print("Usage: agent.print_response('What markets are available?', stream=True)")
+    except ImportError as e:
+        print(f"❌ {e}")
