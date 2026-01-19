@@ -5,6 +5,12 @@ Pure Agno agent with Lighter Exchange tools.
 The agent automatically calls the right tools based on user messages.
 """
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
@@ -149,7 +155,7 @@ Market IDs: 0=BTC-PERP, 1=ETH-PERP, etc. Use get_markets to see all.
 # Create the agent
 lighter_agent = Agent(
     name="Lighter Trading Agent",
-    model=OpenAIChat(id="gpt-4o"),
+    model=OpenAIChat(id="gpt-5"),
     instructions=INSTRUCTIONS,
     tools=ALL_LIGHTER_TOOLS,
     markdown=True,

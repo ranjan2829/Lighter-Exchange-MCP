@@ -1,5 +1,6 @@
 # Core dependencies
 httpx>=0.25.0
+python-dotenv>=1.0.0
 
 # Agno framework
 agno>=0.1.0

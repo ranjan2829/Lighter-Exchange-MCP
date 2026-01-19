@@ -60,7 +60,7 @@ Provide clear summaries of account status and highlight any concerns."""
 
 
 def create_trading_agent(
-    model: str = "gpt-4",
+    model: str = "gpt-5",
     include_transactions: bool = False,
     **kwargs
 ) -> Optional["Agent"]:
@@ -79,7 +79,7 @@ def create_trading_agent(
     )
 
 
-def create_market_agent(model: str = "gpt-4", **kwargs) -> Optional["Agent"]:
+def create_market_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
     if not AGNO_AVAILABLE:
         print("Error: 'agno' package is not installed. Install with: pip install agno")
         return None
@@ -101,7 +101,7 @@ def create_market_agent(model: str = "gpt-4", **kwargs) -> Optional["Agent"]:
     )
 
 
-def create_account_agent(model: str = "gpt-4", **kwargs) -> Optional["Agent"]:
+def create_account_agent(model: str = "gpt-5", **kwargs) -> Optional["Agent"]:
     if not AGNO_AVAILABLE:
         print("Error: 'agno' package is not installed. Install with: pip install agno")
         return None

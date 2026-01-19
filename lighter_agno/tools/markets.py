@@ -18,7 +18,8 @@ def get_markets(
         JSON string with all markets and their details
     """
     client = get_client(authorization)
-    result = client.get("/markets", {})
+    # Use orderBookDetails as /markets is blocked by CloudFront
+    result = client.get("/orderBookDetails", {})
     return json.dumps(result, indent=2)
 
 
@@ -35,7 +36,8 @@ def get_market(
         JSON string with market details
     """
     client = get_client(authorization)
-    result = client.get("/market", {"market_id": market_id})
+    # Use orderBookDetails with market_id filter as /market is blocked
+    result = client.get("/orderBookDetails", {"market_id": market_id})
     return json.dumps(result, indent=2)
 
 
@@ -106,7 +108,8 @@ def get_ticker(
         JSON string with ticker data
     """
     client = get_client(authorization)
-    result = client.get("/ticker", {"market_id": market_id})
+    # Use orderBookDetails as /ticker is blocked by CloudFront
+    result = client.get("/orderBookDetails", {"market_id": market_id})
     return json.dumps(result, indent=2)
 
 
