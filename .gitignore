@@ -25,3 +25,15 @@ npm-debug.log*
 
 # Test coverage
 coverage/
+
+# Security - API Keys and Private Keys
+api_key_config.json
+*_config.json
+private_keys/
+*.pem
+*.key
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
