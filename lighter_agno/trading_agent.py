@@ -162,12 +162,3 @@ lighter_agent = Agent(
     show_tool_calls=True,
 )
 
-
-# Example usage
-if __name__ == "__main__":
-    # Simple chat
-    lighter_agent.print_response("What markets are available on Lighter?", stream=True)
-
-    print("\n" + "="*50 + "\n")
-
-    lighter_agent.print_response("What's the current BTC price?", stream=True)
